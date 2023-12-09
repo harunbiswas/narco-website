@@ -39,9 +39,9 @@ export const AngleDown = ({ color }) => (
 		<path
 			d="M5.25 9L12 15.75L18.75 9"
 			stroke={color ? color : "#FEFEFE"}
-			stroke-width="1.5"
-			stroke-linecap="round"
-			stroke-linejoin="round"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
 		/>
 	</svg>
 );
@@ -56,19 +56,19 @@ export const Dollar = () => (
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
 	>
-		<g clip-path="url(#clip0_1_772)">
+		<g clipPath="url(#clip0_1_772)">
 			<rect width="32" height="32" rx="16" fill="#F6941C" />
 			<path
 				d="M16 9.33203V22.6654"
 				stroke="#FEFEFE"
-				stroke-width="1.25"
-				stroke-linecap="round"
+				strokeWidth="1.25"
+				strokeLinecap="round"
 			/>
 			<path
 				d="M19.3327 13.0846C19.3327 11.4738 17.8403 10.168 15.9993 10.168C14.1584 10.168 12.666 11.4738 12.666 13.0846C12.666 14.6955 14.1584 16.0013 15.9993 16.0013C17.8403 16.0013 19.3327 17.3071 19.3327 18.918C19.3327 20.5288 17.8403 21.8346 15.9993 21.8346C14.1584 21.8346 12.666 20.5288 12.666 18.918"
 				stroke="#FEFEFE"
-				stroke-width="1.25"
-				stroke-linecap="round"
+				strokeWidth="1.25"
+				strokeLinecap="round"
 			/>
 		</g>
 		<defs>
@@ -89,9 +89,9 @@ export const Distance = () => (
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
 	>
-		<g clip-path="url(#clip0_1_807)">
+		<g clipPath="url(#clip0_1_807)">
 			<rect width="32" height="32" rx="16" fill="#F6941C" />
-			<g clip-path="url(#clip1_1_807)">
+			<g clipPath="url(#clip1_1_807)">
 				<path
 					fill-rule="evenodd"
 					clip-rule="evenodd"
@@ -118,12 +118,12 @@ export const SearchIcon = () => (
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
 	>
-		<circle cx="11.5" cy="11.5" r="9.5" stroke="#FEFEFE" stroke-width="1.5" />
+		<circle cx="11.5" cy="11.5" r="9.5" stroke="#FEFEFE" strokeWidth="1.5" />
 		<path
 			d="M18.5 18.5L22 22"
 			stroke="#FEFEFE"
-			stroke-width="1.5"
-			stroke-linecap="round"
+			strokeWidth="1.5"
+			strokeLinecap="round"
 		/>
 	</svg>
 );
@@ -136,29 +136,29 @@ export const Calendar = () => (
 		xmlns="http://www.w3.org/2000/svg"
 	>
 		<rect width="32" height="32" rx="16" fill="#F6941C" />
-		<g clip-path="url(#clip0_201_182)">
+		<g clipPath="url(#clip0_201_182)">
 			<path
 				d="M9.33203 16.0013C9.33203 13.4871 9.33203 12.2301 10.1131 11.449C10.8941 10.668 12.1512 10.668 14.6654 10.668H17.332C19.8462 10.668 21.1033 10.668 21.8843 11.449C22.6654 12.2301 22.6654 13.4871 22.6654 16.0013V17.3346C22.6654 19.8488 22.6654 21.1059 21.8843 21.8869C21.1033 22.668 19.8462 22.668 17.332 22.668H14.6654C12.1512 22.668 10.8941 22.668 10.1131 21.8869C9.33203 21.1059 9.33203 19.8488 9.33203 17.3346V16.0013Z"
 				stroke="#FEFEFE"
-				stroke-width="1.5"
+				strokeWidth="1.5"
 			/>
 			<path
 				d="M12.668 10.668V9.66797"
 				stroke="#FEFEFE"
-				stroke-width="1.5"
-				stroke-linecap="round"
+				strokeWidth="1.5"
+				strokeLinecap="round"
 			/>
 			<path
 				d="M19.332 10.668V9.66797"
 				stroke="#FEFEFE"
-				stroke-width="1.5"
-				stroke-linecap="round"
+				strokeWidth="1.5"
+				strokeLinecap="round"
 			/>
 			<path
 				d="M9.66797 14H22.3346"
 				stroke="#FEFEFE"
-				stroke-width="1.5"
-				stroke-linecap="round"
+				strokeWidth="1.5"
+				strokeLinecap="round"
 			/>
 			<path
 				d="M20.0013 19.3333C20.0013 19.7015 19.7028 20 19.3346 20C18.9664 20 18.668 19.7015 18.668 19.3333C18.668 18.9651 18.9664 18.6667 19.3346 18.6667C19.7028 18.6667 20.0013 18.9651 20.0013 19.3333Z"
@@ -217,18 +217,18 @@ export const LocationTwo = () => (
 		<path
 			d="M17 20.5146C17 16.9167 20.134 14 24 14C27.866 14 31 16.9167 31 20.5146C31 24.0844 28.7658 28.2499 25.2801 29.7396C24.4675 30.0868 23.5325 30.0868 22.7199 29.7396C19.2342 28.2499 17 24.0844 17 20.5146Z"
 			stroke="#24A9E0"
-			stroke-width="1.5"
+			strokeWidth="1.5"
 		/>
 		<path
 			d="M26 21C26 22.1046 25.1046 23 24 23C22.8954 23 22 22.1046 22 21C22 19.8954 22.8954 19 24 19C25.1046 19 26 19.8954 26 21Z"
 			stroke="#24A9E0"
-			stroke-width="1.5"
+			strokeWidth="1.5"
 		/>
 		<path
 			d="M32.9605 27.5C33.6259 28.1025 34 28.7816 34 29.5C34 31.9853 29.5228 34 24 34C18.4772 34 14 31.9853 14 29.5C14 28.7816 14.3741 28.1025 15.0395 27.5"
 			stroke="#24A9E0"
-			stroke-width="1.5"
-			stroke-linecap="round"
+			strokeWidth="1.5"
+			strokeLinecap="round"
 		/>
 		<rect x="0.5" y="0.5" width="47" height="47" rx="23.5" stroke="#24A9E0" />
 	</svg>
@@ -244,9 +244,9 @@ export const DistanzaDalMare = () => (
 		<path
 			d="M15 22C17.483 22 19.345 19 19.345 19C19.345 19 21.207 22 23.69 22C26.172 22 28.655 19 28.655 19C28.655 19 31.138 22 33 22M15 29C17.483 29 19.345 26 19.345 26C19.345 26 21.207 29 23.69 29C26.172 29 28.655 26 28.655 26C28.655 26 31.138 29 33 29"
 			stroke="#24A9E0"
-			stroke-width="1.5"
-			stroke-linecap="round"
-			stroke-linejoin="round"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
 		/>
 		<rect x="0.5" y="0.5" width="47" height="47" rx="23.5" stroke="#24A9E0" />
 	</svg>
@@ -291,16 +291,16 @@ export const Whatsapp = () => (
 		<path
 			d="M12.5 27.5001L13.875 24.3334C12.8231 22.8401 12.3522 21.0143 12.5509 19.1985C12.7495 17.3827 13.604 15.7019 14.9539 14.4714C16.3039 13.2408 18.0565 12.5453 19.8828 12.5152C21.7092 12.4851 23.4837 13.1225 24.8735 14.3079C26.2632 15.4933 27.1726 17.1451 27.431 18.9533C27.6893 20.7616 27.2789 22.6019 26.2768 24.1291C25.2746 25.6562 23.7495 26.7651 21.9878 27.2477C20.2261 27.7303 18.3489 27.5533 16.7083 26.7501L12.5 27.5001Z"
 			stroke="#FEFEFE"
-			stroke-width="1.25"
-			stroke-linecap="round"
-			stroke-linejoin="round"
+			strokeWidth="1.25"
+			strokeLinecap="round"
+			strokeLinejoin="round"
 		/>
 		<path
 			d="M17.5 18.3335C17.5 18.444 17.5439 18.55 17.622 18.6281C17.7002 18.7063 17.8062 18.7502 17.9167 18.7502C18.0272 18.7502 18.1332 18.7063 18.2113 18.6281C18.2894 18.55 18.3333 18.444 18.3333 18.3335V17.5002C18.3333 17.3897 18.2894 17.2837 18.2113 17.2055C18.1332 17.1274 18.0272 17.0835 17.9167 17.0835C17.8062 17.0835 17.7002 17.1274 17.622 17.2055C17.5439 17.2837 17.5 17.3897 17.5 17.5002V18.3335ZM17.5 18.3335C17.5 19.4386 17.939 20.4984 18.7204 21.2798C19.5018 22.0612 20.5616 22.5002 21.6667 22.5002M21.6667 22.5002H22.5C22.6105 22.5002 22.7165 22.4563 22.7946 22.3781C22.8728 22.3 22.9167 22.194 22.9167 22.0835C22.9167 21.973 22.8728 21.867 22.7946 21.7889C22.7165 21.7107 22.6105 21.6668 22.5 21.6668H21.6667C21.5562 21.6668 21.4502 21.7107 21.372 21.7889C21.2939 21.867 21.25 21.973 21.25 22.0835C21.25 22.194 21.2939 22.3 21.372 22.3781C21.4502 22.4563 21.5562 22.5002 21.6667 22.5002Z"
 			stroke="#FEFEFE"
-			stroke-width="1.25"
-			stroke-linecap="round"
-			stroke-linejoin="round"
+			strokeWidth="1.25"
+			strokeLinecap="round"
+			strokeLinejoin="round"
 		/>
 	</svg>
 );
@@ -312,22 +312,22 @@ export const LocationThree = () => (
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
 	>
-		<g clip-path="url(#clip0_1_476)">
+		<g clipPath="url(#clip0_1_476)">
 			<path
 				d="M3.33203 5.67512C3.33203 3.2765 5.42137 1.33203 7.9987 1.33203C10.576 1.33203 12.6654 3.2765 12.6654 5.67512C12.6654 8.05495 11.1759 10.832 8.85208 11.8251C8.31035 12.0566 7.68705 12.0566 7.14532 11.8251C4.82147 10.832 3.33203 8.05495 3.33203 5.67512Z"
 				stroke="#131313"
-				stroke-width="1.5"
+				strokeWidth="1.5"
 			/>
 			<path
 				d="M9.33464 6.0013C9.33464 6.73768 8.73768 7.33464 8.0013 7.33464C7.26492 7.33464 6.66797 6.73768 6.66797 6.0013C6.66797 5.26492 7.26492 4.66797 8.0013 4.66797C8.73768 4.66797 9.33464 5.26492 9.33464 6.0013Z"
 				stroke="#131313"
-				stroke-width="1.5"
+				strokeWidth="1.5"
 			/>
 			<path
 				d="M13.9724 10.332C14.416 10.7337 14.6654 11.1864 14.6654 11.6654C14.6654 13.3222 11.6806 14.6654 7.9987 14.6654C4.3168 14.6654 1.33203 13.3222 1.33203 11.6654C1.33203 11.1864 1.58144 10.7337 2.02501 10.332"
 				stroke="#131313"
-				stroke-width="1.5"
-				stroke-linecap="round"
+				strokeWidth="1.5"
+				strokeLinecap="round"
 			/>
 		</g>
 		<defs>
@@ -348,9 +348,9 @@ export const PrevIcon = () => (
 			<path
 				d="M27.5 17L21.5 24L27.5 31"
 				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
+				strokeWidth="2"
+				strokeLinecap="round"
+				strokeLinejoin="round"
 			/>
 			<rect
 				x="48"
@@ -374,9 +374,9 @@ export const NextIcon = () => (
 		<path
 			d="M21.5 31L27.5 24L21.5 17"
 			stroke="currentColor"
-			stroke-width="2"
-			stroke-linecap="round"
-			stroke-linejoin="round"
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round"
 		/>
 		<rect
 			x="1"
@@ -396,13 +396,13 @@ export const FiveStar = () => (
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
 	>
-		<g clip-path="url(#clip0_6_6160)">
+		<g clipPath="url(#clip0_6_6160)">
 			<rect width="32" height="32" rx="16" fill="#F6941C" />
-			<g clip-path="url(#clip1_6_6160)">
+			<g clipPath="url(#clip1_6_6160)">
 				<path
 					d="M18.125 12.0914L16.439 8.84521C16.2533 8.48761 15.7425 8.48536 15.5536 8.84131L13.827 12.0952C13.7558 12.2295 13.6273 12.3241 13.4779 12.3522L8.96492 13.2028C8.56334 13.2784 8.41721 13.7778 8.71462 14.058L11.8169 16.9813C11.9321 17.0898 11.9891 17.2465 11.9705 17.4037L11.5341 21.1051C11.4881 21.4949 11.8887 21.7832 12.2438 21.6159L15.7869 19.9466C15.9218 19.883 16.0782 19.883 16.2131 19.9466L19.7562 21.6159C20.1113 21.7832 20.5119 21.4949 20.4659 21.1051L20.0295 17.4037C20.0109 17.2465 20.0679 17.0898 20.1831 16.9813L23.284 14.0593C23.5817 13.7788 23.435 13.279 23.033 13.2039L18.4769 12.3525C18.3257 12.3242 18.1959 12.2279 18.125 12.0914Z"
 					stroke="white"
-					stroke-width="1.25"
+					strokeWidth="1.25"
 				/>
 			</g>
 		</g>
@@ -428,7 +428,7 @@ export const CheckIcon = () => (
 			d="M15.0426 4.54239L15.2333 4.35147L15.0425 4.16064L14.3394 3.45752L14.1485 3.2667L13.9576 3.45742L6.49989 10.9075L3.04228 7.45731L2.85136 7.2668L2.66064 7.45752L1.95752 8.16064L1.76677 8.35139L1.95735 8.54231L6.30891 12.9017L6.49992 13.093L6.69101 12.9018L15.0426 4.54239Z"
 			fill="#F6941C"
 			stroke="#F6941C"
-			stroke-width="0.54"
+			strokeWidth="0.54"
 		/>
 	</svg>
 );
@@ -539,8 +539,8 @@ export const AngleUp = () => (
 		<path
 			d="M6 15L12 9L18 15"
 			stroke="#131313"
-			stroke-width="1.5"
-			stroke-linecap="round"
+			strokeWidth="1.5"
+			strokeLinecap="round"
 		/>
 	</svg>
 );
@@ -569,9 +569,9 @@ export const Send = () => (
 		<path
 			d="M4 12H20M20 12L14 6M20 12L14 18"
 			stroke="#FEFEFE"
-			stroke-width="1.5"
-			stroke-linecap="round"
-			stroke-linejoin="round"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
 		/>
 	</svg>
 );
@@ -586,9 +586,9 @@ export const PrevArrow = () => (
 		<path
 			d="M15 19L9 12L15 5"
 			stroke="#FCDDEC"
-			stroke-width="2"
-			stroke-linecap="round"
-			stroke-linejoin="round"
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round"
 		/>
 	</svg>
 );
@@ -603,9 +603,9 @@ export const NextArrow = () => (
 		<path
 			d="M9 19L15 12L9 5"
 			stroke="#FCDDEC"
-			stroke-width="2"
-			stroke-linecap="round"
-			stroke-linejoin="round"
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round"
 		/>
 	</svg>
 );

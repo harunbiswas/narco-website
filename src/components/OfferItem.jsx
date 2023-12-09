@@ -37,7 +37,10 @@ const OfferItem = (props, ref) => {
     handleUpdateRooms,
     setDatePickerOpen,
     config,
+    // bestPossiblePrice,
+    // setBestPossiblePrice
   } = props;
+  // const [bestPossiblePrice, setBestPossiblePrice] = useState()
 
   const [loadingOffers, setLoadingOffers] = useState(false);
 
@@ -46,6 +49,11 @@ const OfferItem = (props, ref) => {
 
   const [offerOpen, setOfferOpen] = useState(false);
   const [offerButtonIn, setOfferButtonIn] = useState(true);
+
+  const [departure,setDeparture] = useState("")
+  const [arrival,setArrival] = useState("")
+  const [readOnly, setReadOnly] = useState(false);
+  const [readOnlyArrival, setReadOnlyArrival] = useState(false);
 
   const sliderRef = useRef(null);
   const images = hotel.immaginiUrl
@@ -63,6 +71,8 @@ const OfferItem = (props, ref) => {
   }, []);
 
   useEffect(() => {
+    localStorage.setItem("prevInDate",new Date(checkInDate));
+    localStorage.setItem("prevOutDate",new Date(checkOutDate));
     if (!offersLoaded) {
       // Assuming hotel.offers is an array of offer objects with properties like startDate, endDate, and minNightsRequired.
 
@@ -158,6 +168,232 @@ const OfferItem = (props, ref) => {
     setLowOffer(lowestOffer);
   }, [hotel]);
 
+  function calculateNights(endDate, minStay, maxStay) {
+    const today = new Date();
+    const end = new Date(endDate);
+
+    // If end date is in the past, set it to one week from today
+    if (end.getTime() < today.getTime()) {
+      const oneWeekFromToday = new Date();
+      oneWeekFromToday.setDate(today.getDate() + 7);
+      end.setDate(oneWeekFromToday.getDate());
+      end.setMonth(oneWeekFromToday.getMonth());
+      end.setFullYear(oneWeekFromToday.getFullYear());
+    }
+
+    // Calculate the time difference in milliseconds
+    const timeDifference = end.getTime() - today.getTime();
+
+    // Convert milliseconds to days
+    const nights = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+    // Check if nights is within minStay and maxStay range
+    if (nights >= minStay && nights <= maxStay) {
+      return Math.abs(nights); // Ensure nights is always positive
+    } else {
+      // If not, return the closest value within the range
+      if (nights < minStay) {
+        return minStay;
+      } else {
+        return maxStay;
+      }
+    }
+  }
+
+  // const [bestPossiblePrice, setBestPossiblePrice] = useState(10000)
+
+  function calculateOfferPrice(offer) {
+    if (offer.minStay === offer.maxStay) {
+      return offer.breakdown[1]?.price || offer.breakdown[0]?.price || offer.breakdown[2]?.price;
+    } else {
+      const calculatedNights = Math.abs((new Date(checkInDate) - new Date(checkOutDate)) / (1000 * 60 * 60 * 24));
+      const clampedNights = Math.max(offer.minStay, Math.min(calculatedNights, offer.maxStay));
+
+      return (offer.breakdown[1]?.price || offer.breakdown[0]?.price || offer.breakdown[2]?.price) * clampedNights;
+    }
+  }
+  function reFilterOffers(offerNum) {
+    let tempArray = [];
+    for(let i=0;i<offerNum?.length - 1;i++){
+      for(let j =i+1;j<offerNum?.length;j++){
+        if(offerNum[i].startDate==offerNum[j].startDate && offerNum[i].endDate==offerNum[j].endDate){
+          if((offerNum[i]?.minStay===offerNum[j].minStay) && (offerNum[i]?.maxStay===offerNum[j].maxStay)){
+            if((offerNum[i]?.breakdown[0]?.price !== 0 && offerNum[j].breakdown[0]?.price === 0 ) || (offerNum[i]?.breakdown[0]?.price === 0 && offerNum[j].breakdown[0]?.price !== 0 ) || (offerNum[i]?.breakdown[0]?.price === 0 && offerNum[j].breakdown[0]?.price === 0 )){
+              if((offerNum[i]?.breakdown[1]?.price !== 0 && offerNum[j].breakdown[1]?.price === 0 ) || (offerNum[i]?.breakdown[1]?.price === 0 && offerNum[j].breakdown[1]?.price !== 0 ) || (offerNum[i]?.breakdown[1]?.price === 0 && offerNum[j].breakdown[1]?.price === 0 )){
+                if((offerNum[i]?.breakdown[2]?.price !== 0 && offerNum[j].breakdown[2]?.price === 0 ) || (offerNum[i]?.breakdown[2]?.price === 0 && offerNum[j].breakdown[2]?.price !== 0 ) || (offerNum[i]?.breakdown[2]?.price === 0 && offerNum[j].breakdown[2]?.price === 0 )){
+                  tempArray.push(offerNum[i]);
+                  let temp = JSON.parse(JSON.stringify(offerNum[i]));
+                  temp.breakdown[0].price = Math.max(offerNum[i].breakdown[0]?.price,offerNum[j].breakdown[0]?.price);
+                  temp.breakdown[1].price = Math.max(offerNum[i].breakdown[1]?.price,offerNum[j].breakdown[1]?.price);
+                  temp.breakdown[2].price = Math.max(offerNum[i].breakdown[2]?.price,offerNum[j].breakdown[2]?.price);
+                  
+                  offerNum[i]=temp;
+                  offerNum.splice(j,1)
+                  break;
+                }
+              }
+            }
+          }
+        }
+        
+      }
+    }
+
+    return offerNum?.filter(itemB => !tempArray.includes(itemB));
+  }
+  const requiredNights = Math.abs((new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24));
+  function filterOffers(offers, tempStartDate, tempEndDate) {
+    const maxDaysDifference = 3;
+    return offers?.filter((offer) => {
+        const offerStartDate = new Date(offer?.startDate);
+        const offerEndDate = new Date(offer?.endDate);
+        const current = new Date();
+        offerStartDate.setHours(0, 0, 0, 0);
+        offerEndDate.setHours(0, 0, 0, 0);
+        const tempStartDateObj = new Date(tempStartDate);
+        const tempEndDateObj = new Date(tempEndDate);
+
+        const oneAndHalfMonthsLater = new Date(tempEndDateObj);
+        oneAndHalfMonthsLater.setMonth(oneAndHalfMonthsLater.getMonth() + 1);
+        oneAndHalfMonthsLater.setDate(oneAndHalfMonthsLater.getDate() + 15); 
+        const daysDiffStart = Math.abs((offerStartDate - tempStartDateObj) / (1000 * 60 * 60 * 24));
+        const daysDiffEnd = Math.abs((offerEndDate - tempEndDateObj) / (1000 * 60 * 60 * 24));
+        const specialCase = Math.abs((offerEndDate - current) / (1000 * 60 * 60 * 24));
+
+        let numofnights = 0;
+        if (offer.minStay == offer.maxStay) {
+          numofnights = offer.maxStay;
+        } else {
+          if(requiredNights<=offer.minStay){
+            numofnights=offer.minStay;
+          }
+          else if(requiredNights>=offer.maxStay){
+            numofnights=offer.maxStay;
+          }
+          else{
+            for(let j = offer.minStay+1;j<offer.maxStay;j++){
+              if(j==requiredNights){
+                numofnights=j;
+              }
+            }
+          }
+        }
+
+        const startDateValid = (daysDiffStart <= maxDaysDifference && daysDiffStart >= (maxDaysDifference * -1));
+        const endDateValid = (daysDiffEnd <= maxDaysDifference && daysDiffEnd >= (maxDaysDifference * -1));
+        const nightsDifferenceValid = Math.abs(requiredNights - numofnights) <= 2;
+
+        if((0>=( offerStartDate - tempStartDateObj)  && 0>=(tempStartDateObj - offerEndDate)) && (0>=(offerStartDate - tempEndDateObj) && 0>=(tempEndDateObj - offerEndDate))){
+          return (
+            requiredNights + 2 >= numofnights &&
+            // requiredNights -2 <= numofnights &&
+            specialCase >= numofnights + 1 &&
+            (offer.numofnights = numofnights)
+          );
+      }
+        else if((0>=( offerStartDate - tempStartDateObj)  && 0>=(tempStartDateObj -offerEndDate)) && !(0>=(offerStartDate - tempEndDateObj) && 0>=(tempEndDateObj - offerEndDate))){
+          const userNight = Math.abs((offerEndDate - tempStartDateObj) / (1000 * 60 * 60 * 24));
+          return (
+            requiredNights-2-userNight<=userNight &&
+            requiredNights +2 >= numofnights && 
+            specialCase >= numofnights + 1 &&
+            (offer.numofnights = numofnights)
+          );
+      }
+        else if(!(0>=( offerStartDate - tempStartDateObj)  && 0>=(tempStartDateObj -offerEndDate)) && (0>=(offerStartDate - tempEndDateObj) && 0>=(tempEndDateObj - offerEndDate))){
+          const userNight = Math.abs((offerStartDate - tempEndDateObj) / (1000 * 60 * 60 * 24));
+          return (
+            requiredNights-2-userNight<=userNight &&
+            requiredNights +2 >= numofnights && 
+            specialCase >= numofnights + 1 &&
+            (offer.numofnights = numofnights)
+          );
+      }
+          if(Math.abs(requiredNights - numofnights) >=0 && nightsDifferenceValid){
+            return (
+              requiredNights + 2 >= numofnights &&
+              requiredNights -2 <= numofnights &&
+              oneAndHalfMonthsLater>offerStartDate &&
+              specialCase >= numofnights + 1 &&
+              (offer.numofnights = numofnights)
+            );
+          }
+
+      })
+      .sort((a, b) => {
+        if (a?.startDate === b?.startDate) {
+          if(a?.endDate===b?.endDate){
+            const numofnightsA = a?.numofnights;
+            const numofnightsB = b?.numofnights;
+            if ((numofnightsA-requiredNights) === (numofnightsB-requiredNights)) {
+              const priceA = calculateOfferPrice(a);
+              const priceB = calculateOfferPrice(b);
+            return priceA - priceB;
+            }
+            return Math.abs(numofnightsA-requiredNights) - Math.abs(numofnightsB-requiredNights);
+          }
+          return new Date(a?.endDate) - new Date(b?.endDate);
+        }
+        return new Date(a?.startDate) - new Date(b?.startDate);
+      });
+  }
+  let offerNum = filterOffers(offers, checkInDate, checkOutDate);
+  // let offerNum = reFilterOffers(offerNum2);
+  // let offerNum = filterOffers(offers, checkInDate, checkOutDate);
+  let bestOfferIndex =0;
+  let diffOffer = 10000000;
+    for(let i = 0;i<offerNum?.length;i++){
+      const startDiff = Math.abs((new Date(offerNum[i]?.startDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24));
+        const endDiff = Math.abs((new Date(offerNum[i]?.endDate) - new Date(checkOutDate)) / (1000 * 60 * 60 * 24));
+        const diff = Math.abs(startDiff+endDiff);
+        if(diff < diffOffer){
+          diffOffer=diff;
+          bestOfferIndex=i;
+        }
+  }
+  let newOfferArray = [];
+  if(bestOfferIndex!=0) {
+    let tempo=offerNum[bestOfferIndex];
+    offerNum[bestOfferIndex]=offerNum[bestOfferIndex-1];
+    offerNum[bestOfferIndex-1] = tempo;
+    bestOfferIndex=bestOfferIndex-1;
+  }
+  for(let i =bestOfferIndex;i<offerNum?.length;i++){
+    newOfferArray.push(offerNum[i]);
+  }
+  newOfferArray=reFilterOffers(newOfferArray)
+  let bestPossiblePrice = 10000;
+    newOfferArray?.map((item, id) => {
+      if (item?.minStay === item?.maxStay) {
+        const myVar = item?.breakdown[1]?.price || item?.breakdown[0]?.price || item?.breakdown[2]?.price
+        if (bestPossiblePrice > myVar) {
+          bestPossiblePrice = myVar
+        }
+      }
+      else {
+        let calculatedNights =  Math.abs((new Date(checkInDate) - new Date(checkOutDate)) / (1000 * 60 * 60 * 24));
+        if(calculatedNights<item?.minStay){
+          calculatedNights=item.minStay
+        }
+        else if(calculatedNights>item?.maxStay){
+          calculatedNights=item.maxStay
+        }
+        const myVar2 = (item?.breakdown[1]?.price ||
+          item?.breakdown[0]?.price ||
+          item?.breakdown[2]?.price) * calculatedNights
+
+          if (bestPossiblePrice > myVar2) {
+          bestPossiblePrice=myVar2
+        }
+      }
+      hotel.bestPossiblePrice=bestPossiblePrice;
+
+    })
+    hotel.finalOffers=newOfferArray
+
+  // console.log(newOfferArray , " :: newOfferArray")
+
+
   return (
     <div className="offer-item">
       <div
@@ -190,20 +426,21 @@ const OfferItem = (props, ref) => {
             )}
           </div>
 
-          <div className="price-area d-flex flex-col">
+          <div className={`price-area d-flex flex-col ${index<=2 ? "bestOffers" : ""}`}>
             <div>A PARTIRE DA (giorno)</div>
             <h4
               className="font-bold align-self-end"
               style={{ color: "var(--title)" }}
             >
-              {(lowestOffered && lowestOffered?.lowestOfferPrice) || 0}
+              {(lowestOffered && lowestOffered?.lowestOfferPrice) || bestPossiblePrice}
               {lowestOffered && lowestOffered?.breakdown[0]?.currency}
+              
             </h4>
           </div>
 
-          {hotel.ticker ? (
+          {index<=2 || hotel.ticker ? (
             <span className="ticker d-none d-md-flex ">
-              <span>{hotel.ticker}</span>
+              <span>{(index === 1 && "Più venduto") || (index === 2 && "Prezzo più basso")}</span>
             </span>
           ) : (
             ""
@@ -217,12 +454,19 @@ const OfferItem = (props, ref) => {
                 WebkitMask: `url(${mask}) no-repeat center center / contain`,
               }}
             >
-              <div className="prev-arrow" onClick={handlePrev}>
+              {hotel?.images.length>1 && <div className="prev-arrow" onClick={handlePrev}>
                 <PrevArrow />
-              </div>
-              <div className="next-arrow" onClick={handleNext}>
+              </div>}
+              {hotel?.images.length>1 && <div className="next-arrow" onClick={handleNext}>
                 <NextArrow />
-              </div>
+              </div>}
+              {index <= 2|| hotel.ticker ? (
+                <span className="ticker d-md-none ">
+                  <span>{hotel.ticker ? hotel.ticker : (index === 1 && "Più venduto") || (index === 2 && "Prezzo più basso")}</span>
+                </span>
+              ) : (
+                ""
+              )}
               <Swiper
                 spaceBetween={20}
                 modules={[Pagination, Navigation]}
@@ -230,7 +474,7 @@ const OfferItem = (props, ref) => {
                 ref={sliderRef}
               >
                 {hotel?.images
-                  .slice(0, hotel?.images.length - 1)
+                  // .slice(0, hotel?.images.length - 1)
                   .map((item, i) => (
                     <SwiperSlide key={i}>
                       <div className="img-item">
@@ -258,14 +502,10 @@ const OfferItem = (props, ref) => {
               </span>
 
               <h6 className="subtitle">
-                {hotel?.summaryDescription?.length > 80
-                  ? hotel?.summaryDescription?.substring(0, 120) + "..."
-                  : hotel?.summaryDescription}
+                {hotel?.summaryDescription}
               </h6>
               <div className="lorem">
-                {hotel?.hotelDescription?.length > 80
-                  ? hotel?.hotelDescription?.substring(0, 120) + "..."
-                  : hotel?.hotelDescription}
+                {hotel?.hotelDescription}
               </div>
             </div>
           </div>
@@ -293,7 +533,7 @@ const OfferItem = (props, ref) => {
                 className="outline-0 bg-transparent whatsapp-btn"
               >
                 <a
-                  href={`https://api.whatsapp.com/send/?phone=3908119758555&text=Richiesta Informazioni da InfoIschia per L'hotel ${hotel["Nome Hotel"]}&type=phone_number&app_absent=0`}
+                  href={`https://api.whatsapp.com/send/?phone=3908119758555&text=${process.env.REACT_APP_WHATSAPP_TEXT} &type=phone_number&app_absent=0`}
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -306,7 +546,7 @@ const OfferItem = (props, ref) => {
                 </div>
                 <div className="cont">
                   <div>Parliamone!</div>
-                  <div className="subtxt">08118555211</div>
+                  <div className="subtxt">{process.env.REACT_APP_PHONE_NUMBER}</div>
                 </div>
               </a>
             </div>
@@ -319,15 +559,17 @@ const OfferItem = (props, ref) => {
           <div className="overlayer" />
           {loadingOffers ? (
             <OffersLoading />
-          ) : offers && offers.length ? (
+          ) : newOfferArray && newOfferArray.length ? (
+            
             <OfferPriceSlider
+              bestPossiblePrice={bestPossiblePrice}
               setUserData={setUserData}
               userData={userData}
               sending={sending}
               setvalue={setvalue}
               value={value}
               handleSubmit={handleSubmit}
-              offers={offers}
+              offers={newOfferArray}
               hotel={hotel}
               checkInDate={checkInDate}
               checkOutDate={checkOutDate}
@@ -340,6 +582,15 @@ const OfferItem = (props, ref) => {
               handleOfferClose={() => {
                 setOfferOpen(!offerOpen);
               }}
+              departure={departure}
+              setDeparture={setDeparture}
+              arrival={arrival}
+              setArrival={setArrival}
+              readOnly={readOnly}
+              setReadOnly={setReadOnly}
+              readOnlyArrival={readOnlyArrival}
+              setReadOnlyArrival={setReadOnlyArrival}
+
             />
           ) : (
             <>

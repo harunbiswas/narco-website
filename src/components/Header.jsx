@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import logo from '../assets/img/logo.png';
 import useScrollPosition from '../hooks/useScroll';
 import { Hamburger, Phone } from './Icon';
+import { Link } from 'react-router-dom';
 const Header = () => {
     const scrollPosition = useScrollPosition();
     const [open, setOpen] = useState(false);
@@ -19,14 +20,17 @@ const Header = () => {
                             <ul className="menu">
                                 {menu?.map((item, i) => (
                                     <li key={i}>
-                                        <a
+                                        {item.url && <a
                                             href={item?.url}
                                             target="_blank"
                                             rel="noreferrer"
                                             className={i == 0 ? 'active' : ''}
                                         >
                                             {item?.title}
-                                        </a>
+                                        </a>}
+                                        {!item.url &&
+                                            <Link className={i == 0 ? 'active' : ''}>{item?.title}</Link>
+                                        }
                                     </li>
                                 ))}
                             </ul>
@@ -58,7 +62,7 @@ const HeaderRight = () => {
                     <Phone />
                     <div>
                         <div>24/7 Support</div>
-                        <div className="number">08118555211</div>
+                        <div className="number">{process.env.REACT_APP_PHONE_NUMBER}</div>
                     </div>
                 </a>
             </div>
@@ -69,15 +73,15 @@ const HeaderRight = () => {
 const menu = [
     {
         title: 'Offerte per Ischia',
-        url: '#',
+        url: '',
     },
     {
         title: "Scopri l'isola",
-        url: 'https://www.infoischia.com/',
+        url: process.env.REACT_APP_RE_ADDRESS_LINK_1,
     },
     {
         title: '10 luoghi da vedere',
-        url: 'https://www.infoischia.com/visitare-ischia-i-10-luoghi-da-non-perdere/',
+        url: process.env.REACT_APP_RE_ADDRESS_LINK_2,
     },
 ];
 export default Header;

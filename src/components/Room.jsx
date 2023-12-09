@@ -6,22 +6,22 @@ function Room({ roomData, id, removeRoom, handleUpdateRoom }) {
 
     useEffect(() => {
         setOptions({
-            adults: Array.from({ length: 4 - roomData.noofChildren }, (_, index) => ({
+            adults: Array.from({ length: 4 - roomData.child }, (_, index) => ({
                 val: index + 1,
                 text: index + 1,
             })),
-            chilren: Array.from({ length: 4 - roomData.noofAdults + 1 }, (_, index) => ({ val: index, text: index })),
-            ages: Array.from({ length: 17 }, (_, index) => ({ val: index + 1, text: index + 1 })),
+            chilren: Array.from({ length: 4 - roomData.adult + 1 }, (_, index) => ({ val: index, text: index })),
+            childAge: Array.from({ length: 17 }, (_, index) => ({ val: index + 1, text: index + 1 })),
         });
     }, [roomData]);
 
     const handleAgeChange = (i, value) => {
-        const changedAges = roomData.ages.map((age, index) => {
+        const changedAges = roomData.childAge.map((age, index) => {
             if (index === i) return value;
             else return age;
         });
         // setRoomData(() => ({ ...roomData, ages: changedAges }));
-        handleUpdateRoom({ ...roomData, ages: changedAges }, id);
+        handleUpdateRoom({ ...roomData, childAge: changedAges }, id);
     };
 
     const handleChange = (e) => {
@@ -30,14 +30,14 @@ function Room({ roomData, id, removeRoom, handleUpdateRoom }) {
     };
 
     const handleNoofChildren = (value) => {
-        const dataDiff = value - roomData.noofChildren;
-        let ages = roomData.ages;
-        if (dataDiff <= 0) ages = ages.slice(0, value);
+        const dataDiff = value - roomData.child;
+        let childAge = roomData.childAge;
+        if (dataDiff <= 0) childAge = childAge.slice(0, value);
         else {
-            ages = ages.concat(Array(dataDiff).fill(12));
+            childAge = childAge.concat(Array(dataDiff).fill(12));
         }
 
-        handleUpdateRoom({ ...roomData, ages, noofChildren: value }, id);
+        handleUpdateRoom({ ...roomData, childAge, child: value }, id);
     };
     return (
         <div>
@@ -53,20 +53,20 @@ function Room({ roomData, id, removeRoom, handleUpdateRoom }) {
                 )}
             </h5>
             <div className="row g-3">
-                <div className="col-sm-6 col-md-3 col-lg-2">
+                <div className="col-sm-6 col-md-3 col-lg-2" style={{marginLeft : -10}}>
                     <Input
-                        name="noofAdults"
+                        name="adult"
                         select
                         handleChange={handleChange}
-                        value={roomData.noofAdults}
+                        value={roomData.adult}
                         label="Adulti"
                         options={options.adults}
                     />
                 </div>
                 <div className="col-sm-6 col-md-3 col-lg-2">
                     <Input
-                        name="noofChildren"
-                        value={roomData.noofChildren}
+                        name="child"
+                        value={roomData.child}
                         label="Bambini"
                         handleChange={(e) => {
                             handleNoofChildren(e.target.value);
@@ -76,15 +76,15 @@ function Room({ roomData, id, removeRoom, handleUpdateRoom }) {
                     />
                 </div>
 
-                {Array.from({ length: roomData.noofChildren }, (_, index) => index).map((i) => (
+                {Array.from({ length: roomData.child }, (_, index) => index).map((i) => (
                     <div className="col-sm-6 col-md-3 col-lg-2">
                         <Input
-                            value={roomData.ages[i]}
+                            value={roomData.childAge[i]}
                             handleChange={(e) => {
                                 handleAgeChange(i, e.target.value);
                             }}
                             select
-                            options={options.ages}
+                            options={options.childAge}
                             label={`Età ${i + 1}`}
                             placeholder="DD/MM/YY"
                         />

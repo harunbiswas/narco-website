@@ -16,6 +16,7 @@ import {
   PrevIcon,
   Ship,
   Train,
+
 } from "./Icon";
 import SelectDropDown from "./SelectDropDown";
 import ViewInquiryForm from "./ViewInquiryForm";
@@ -61,8 +62,13 @@ function calculateNights(endDate, minStay, maxStay) {
   }
 }
 
+
+
+
+
 const OfferPriceSlider = (
   {
+    bestPossiblePrice,
     offers,
     serial,
     setOfferButtonIn,
@@ -80,45 +86,86 @@ const OfferPriceSlider = (
     handleUpdateRooms,
     setDatePickerOpen,
     handleOfferClose,
+    departure,
+    setDeparture,
+    arrival,
+    setArrival,
+    readOnly,
+    setReadOnly,
+    readOnlyArrival,
+    setReadOnlyArrival
   },
   ref
 ) => {
   const [index, setIndex] = useState(0);
   const [innerCollapse, setInnerCollapse] = useState(false);
-
   const sliderRef = useRef(null);
+
+  const [persistDate,setPersistDate] = useState({})
+  const [persistArrival,setPersistArrival] = useState({})
+  const [persistReadOnly,setPersistReadOnly] = useState({})
+  const [persistReadOnlyArrival,setPersistReadOnlyArrival] = useState({})
+
+  let calculatedNights = Math.abs((new Date(checkInDate) - new Date(checkOutDate)) / (1000 * 60 * 60 * 24))
+  const calculateNightsNew= ( minStay, maxStay) =>{
+    if(minStay===maxStay){
+      return maxStay
+    }
+    else{
+      if (calculatedNights < minStay) {
+        calculatedNights = minStay
+      }
+      else if (calculatedNights > maxStay) {
+        calculatedNights = maxStay
+      }
+      return calculatedNights
+
+    }
+  }
 
   const [innerOffers, setInnerOffers] = useState(offers);
 
   const [activeData, setActiveData] = useState(innerOffers[index]);
-  console.log(activeData);
 
   useEffect(() => {
     setActiveData(innerOffers[index]);
   }, [innerOffers]);
-
+  window.innerOffers = innerOffers
   const [faqs, setFaqs] = useState([]);
 
   useEffect(() => {
     setFaqs([
       {
         title: "Descrizione Offerta",
-        paragraph: hotel?.description ?? "",
+        paragraph: activeData?.description ?? "",
         text: [],
       },
       {
         title: "Descrizione Hotel",
         paragraph: hotel?.hotelDescription ?? "",
-      },
-      {
-        title: "Dettagli Servizi",
-        paragraph: hotel?.serviceDetails ?? "",
-        text: [],
+
+        hotelDescriptionProps: [
+          {
+            title: hotel?.roomsTitle,
+            description: hotel?.roomsDescription,
+          },
+          {
+            title: hotel?.spaTitle ,
+            description: hotel?.spaDescription ,
+          },
+          {
+            title: hotel?.restaurantTitle,
+            description: hotel?.restaurantDescription,
+          }
+        ],
+
+        serviceTitle: "Dettagli Servizi",
+        serviceDetails: hotel?.serviceDetails ?? "",
+
       },
       {
         title: "Pacchetto Incluso",
         paragraph: activeData?.packages ?? "",
-
         text: [],
       },
       {
@@ -197,6 +244,37 @@ const OfferPriceSlider = (
     }
   }, [endReached]);
 
+  const [currentBreakdown, setCurrentBreakdown] = useState(activeData?.breakdown[1].breakdownId || activeData?.breakdown[0].breakdownId || activeData?.breakdown[2].breakdownId)
+
+  const breakDownTypeChecker = (currentOffer) => {
+    if(currentOffer?.breakdown[1].price!=0){
+      return currentOffer?.breakdown[1].breakdownId
+    }
+    else if(currentOffer?.breakdown[0].price!=0){
+      return currentOffer?.breakdown[0].breakdownId
+    }
+    else if(currentOffer?.breakdown[2].price!=0){
+      return currentOffer?.breakdown[2].breakdownId
+    }
+  }
+
+
+  const breakDownTypeResetter = (currentOffer) => {
+    const breakdown = breakDownTypeChecker(currentOffer)
+    // console.log(breakdown)
+    setCurrentBreakdown(breakdown)
+
+  }
+  useEffect(()=>{
+   localStorage.setItem("price", activeData?.minStay === activeData?.maxStay 
+    ?
+    activeData.breakdown[breakDownTypeChecker(activeData)-1].price
+    :
+    (((!(activeData?.minStay === activeData?.maxStay) && activeData?.id===activeData?.id) ? (activeData.breakdown[currentBreakdown - 1]?.price!==0 ? (activeData.breakdown[currentBreakdown - 1]?.price) : activeData.breakdown[breakDownTypeChecker(activeData) - 1].price) : activeData.breakdown[breakDownTypeChecker(activeData) - 1].price)* calculatedNights))
+
+  },[activeData])
+
+
   return (
     <>
       <div className="offer-item-middle-title gap-2 mb-3">
@@ -204,20 +282,18 @@ const OfferPriceSlider = (
         {innerOffers.length > 1 ? (
           <div className="d-flex gap-2">
             <span
-              className={`prev ${
-                beginningReached
+              className={`prev ${beginningReached
                   ? "swiper-control-disabled"
                   : "swiper-control-active"
-              }`}
-              onClick={!beginningReached ? handlePrev : () => {}}
+                }`}
+              onClick={!beginningReached ? handlePrev : () => { }}
             >
               <PrevIcon />
             </span>
             <span
-              className={`next ${
-                endReached ? "swiper-control-disabled" : "swiper-control-active"
-              }`}
-              onClick={!endReached ? handleNext : () => {}}
+              className={`next ${endReached ? "swiper-control-disabled" : "swiper-control-active"
+                }`}
+              onClick={!endReached ? handleNext : () => { }}
             >
               <NextIcon />
             </span>
@@ -260,65 +336,67 @@ const OfferPriceSlider = (
             },
           }}
         >
-          {innerOffers?.map((item, i) => (
+
+          {offers?.map((item, i) => {
+            calculateNightsNew(item?.minStay, item?.maxStay)
+          return(
             <SwiperSlide key={i}>
               <div
-                className={`offer-price-slider-item ${
-                  i === index ? "active" : ""
-                }`}
+                className={`offer-price-slider-item ${i === index ? "active" : ""
+                  }`}
                 onClick={() => {
                   setIndex(i);
+                  breakDownTypeResetter(innerOffers[i]);
                   setActiveData(innerOffers[i]);
+                  setDeparture(persistDate[i])
+                  setArrival(persistArrival[i])
                 }}
                 style={{ margin: "1px" }}
               >
-                <div className="info">
-                  <div className="duration">Dal</div>
-                  <div className="duration">
-                    {formatItalianDate(new Date(item?.startDate))} al{" "}
-                    {formatItalianDate(new Date(item?.endDate))}
-                  </div>
-                  <div className="text--small">
-                    {calculateNights(
-                      item?.endDate,
-                      item?.minStay,
-                      item?.maxStay
-                    )}
-                    {(calculateNights(
-                      item?.endDate,
-                      item?.minStay,
-                      item?.maxStay
-                    ) === 1 &&
-                      " Night ") ||
-                      " Nights "}
-                    -{" "}
-                    {(item?.breakdown[2].price && "Mezza Pensione") ||
-                      (item?.breakdown[1].price && "Mezza Pensione") ||
-                      (item?.breakdown[0].price && "Pensione Completa") ||
-                      ""}
-                  </div>
-                </div>
+                <div className="short-info">
+                  <div className="info">
+                    <div className="duration">Dal</div>
+                    <div className="duration">
+                      {formatItalianDate(new Date(item?.startDate))} al{" "}
+                      {formatItalianDate(new Date(item?.endDate))}
+                    </div>
 
-                <h3 className="price">
-                  {(item?.minStay === item?.maxStay &&
-                    (item?.breakdown[2].price ||
-                      item?.breakdown[1].price ||
-                      item?.breakdown[0].price)) ||
-                    (item?.breakdown[2].price ||
-                      item?.breakdown[1].price ||
-                      item?.breakdown[0].price) *
-                      calculateNights(
-                        item?.endDate,
-                        item?.minStay,
-                        item?.maxStay
-                      )}
-                  {(item?.breakdown[2].price && item?.breakdown[2].currency) ||
-                    (item?.breakdown[1].price && item?.breakdown[1].currency) ||
-                    (item?.breakdown[0].price && item?.breakdown[0].currency)}
-                </h3>
+                  </div>
+
+                  <h3 className="price">
+                    {item?.minStay === item?.maxStay 
+                      ?
+                      item.breakdown[breakDownTypeChecker(item)-1].price
+                      :
+                      (((!(activeData?.minStay === activeData?.maxStay) && activeData?.id===item?.id) ? (item.breakdown[currentBreakdown - 1]?.price!==0 ? (item.breakdown[currentBreakdown - 1]?.price) : item.breakdown[breakDownTypeChecker(item) - 1].price) : item.breakdown[breakDownTypeChecker(item) - 1].price)* calculatedNights)}
+                    {(item?.breakdown[1]?.price && item?.breakdown[1].currency) ||
+                      (item?.breakdown[0]?.price && item?.breakdown[0].currency) ||
+                      (item?.breakdown[2]?.price && item?.breakdown[2].currency)}
+                  </h3>
+
+                </div>
+                <div className="text--small">
+                  {calculateNightsNew(
+                    item?.minStay,
+                    item?.maxStay
+                  )}
+                  {(calculateNightsNew(
+                    item?.minStay,
+                    item?.maxStay
+                  ) === 1 &&
+                    " Notte ") ||
+                    " Notti "}
+                  -{" "}
+                  {item?.minStay === item?.maxStay
+                    ?
+                    item.breakdown[breakDownTypeChecker(item) - 1].name
+                    :
+                    ((!(activeData?.minStay === activeData?.maxStay) && activeData?.id===item?.id) ? (item.breakdown[currentBreakdown - 1]?.price!==0 ? (item.breakdown[currentBreakdown - 1]?.name) : item.breakdown[breakDownTypeChecker(item) -1].name) : item.breakdown[breakDownTypeChecker(item) -1].name)}
+                </div>
               </div>
             </SwiperSlide>
-          ))}
+          )}
+          )}
         </Swiper>
       </div>
       <div className="py-4">
@@ -342,30 +420,28 @@ const OfferPriceSlider = (
               <div className="full-board-top">
                 <div>
                   <SelectDropDown
-                    selectedOption={[
-                      activeData?.breakdown.map((item) => item.name),
-                    ]}
+                    selectedOption={currentBreakdown}
                     handleChange={(i) => {
+                      // console.log(i)
+                      setCurrentBreakdown(i)
                       handleSelectedItemChange(index, i);
                     }}
-                    selectItems={activeData?.breakdown}
+                    selectItems={activeData?.breakdown?.filter(item => item?.price != 0)}
                   />
 
                   <span>Bevande {activeData?.beverageAvailability}</span>
                 </div>
                 <h3>
-                  {calculateNights(
-                    activeData?.endDate,
+                  {calculateNightsNew(
                     activeData?.minStay,
                     activeData?.maxStay
                   )}
-                  {(calculateNights(
-                    activeData?.endDate,
+                  {(calculateNightsNew(
                     activeData?.minStay,
                     activeData?.maxStay
                   ) === 1 &&
-                    " Night ") ||
-                    " Nights "}
+                    " Notte ") ||
+                    " Notti "}
                 </h3>
               </div>
               <ul className="check-lists">
@@ -390,7 +466,7 @@ const OfferPriceSlider = (
             </div>
           </div>
           <div className="col-lg-6">
-            <FaqsItems id={`package-${serial}`} data={faqs} />
+            <FaqsItems id={`package-${serial}`} data={faqs}  />
           </div>
         </div>
         <div className="py-3"></div>
@@ -425,22 +501,40 @@ const OfferPriceSlider = (
           sending={sending}
           setvalue={setvalue}
           value={value}
+          breakdownNames={activeData?.breakdown?.filter(item => item?.price != 0)}
           handleSubmit={handleSubmit}
           checkInDate={checkInDate}
           checkOutDate={checkOutDate}
           offer={activeData}
-          Hotel={hotel["Nome Hotel"]}
+          Hotel={hotel}
           NomeModulo={hotel["NomeModulo"]}
           totalPriceForUser={activeData?.breakdown || []}
           buttonDisabled={buttonDisabled}
           handleUpdateRooms={handleUpdateRooms}
           setDatePickerOpen={setDatePickerOpen}
           selectItems={activeData?.breakdown || []}
-          selectedPackage={0}
+          selectedPackage={activeData?.breakdown?.filter(item => item?.price != 0)}
           handleOfferClose={handleOfferClose}
           setSelectedPackage={(i) => {
             handleSelectedItemChange(index, i);
           }}
+          departure={departure}
+          setDeparture={setDeparture}
+          persistDate={persistDate}
+          setPersistDate={setPersistDate}
+          idx={index}
+          arrival={arrival}
+          setArrival={setArrival}
+          persistArrival={persistArrival}
+          setPersistArrival={setPersistArrival}
+          readOnly={readOnly}
+          setReadOnly={setReadOnly}
+          persistReadOnly={persistReadOnly}
+          setPersistReadOnly={setPersistReadOnly}
+          readOnlyArrival={readOnlyArrival}
+          setReadOnlyArrival={setReadOnlyArrival}
+          persistReadOnlyArrival={persistReadOnlyArrival}
+          setPersistReadOnlyArrival={setPersistReadOnlyArrival}
         />
       </div>
     </>

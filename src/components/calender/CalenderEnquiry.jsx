@@ -16,11 +16,20 @@ const CustomDatePicker = ({
     handleChange,
     readOnly,
     setDatePickerOpen,
+    isDateDisabled,
+    setDeparture,
+    persistDeparture,
+    setArrival,
+    persistArrival
 }) => {
     const datePickerRef = useRef(null);
 
     const [minimumDate, setminimumDate] = useState(minDate);
     const [maximumDate, setmaximumDate] = useState(maxDate);
+    useEffect(()=>{
+        setDeparture(persistDeparture)
+        setArrival(persistArrival)
+    },[])
 
     useEffect(() => {
         setminimumDate(new Date(minDate));
@@ -78,6 +87,7 @@ const CustomDatePicker = ({
                 minDate={minimumDate}
                 maxDate={maximumDate}
                 selected={selected}
+                excludeDates={isDateDisabled}
                 onChange={(date) => {
                     handleDateChange(date);
                     setDatePickerOpen(false);
